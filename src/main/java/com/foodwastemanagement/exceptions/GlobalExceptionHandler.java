@@ -95,4 +95,22 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ExceptionHandler(InvalidUserException.class)
+    public ResponseEntity<BaseErrorResponse> handleInvalidUserException(
+            InvalidUserException exception){
+        BaseErrorResponse errorResponse = new BaseErrorResponse();
+        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+        errorResponse.setMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<BaseErrorResponse> handleResourceNotFoundException(
+            ResourceNotFoundException exception){
+        BaseErrorResponse errorResponse = new BaseErrorResponse();
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }
