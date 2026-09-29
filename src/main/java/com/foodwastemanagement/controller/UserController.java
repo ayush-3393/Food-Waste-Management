@@ -10,6 +10,7 @@ import com.foodwastemanagement.models.User;
 import com.foodwastemanagement.services.AuthService;
 import com.foodwastemanagement.services.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +32,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterUserResponseDto> registerUser(
-            @RequestBody RegisterUserRequestDto registerUserRequestDto,
+            @Valid @RequestBody RegisterUserRequestDto registerUserRequestDto,
             HttpSession httpSession){
         User registeredUser = this.userService.registerUser(registerUserRequestDto);
 
@@ -49,7 +50,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginUserResponseDto> loginUser(
-            @RequestBody LoginUserRequestDto loginUserRequestDto,
+            @Valid @RequestBody LoginUserRequestDto loginUserRequestDto,
             HttpSession httpSession){
 
         // throws exception if already logged in
