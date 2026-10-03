@@ -40,8 +40,8 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
             CreateFoodDonationRequestDto createFoodDonationRequestDto,
             User user) {
 
-        if(user.getUserType() != UserType.FOOD_DONOR){
-            throw new InvalidUserException("Only food donors are allowed to create food donations");
+        if(user.getUserType() == UserType.DELIVERY_PARTNER){
+            throw new InvalidUserException("Delivery partners are not allowed to create food donations");
         }
 
         FoodDonation foodDonation = new FoodDonation();

@@ -3,6 +3,7 @@ package com.foodwastemanagement.controller;
 import com.foodwastemanagement.constants.SessionConstants;
 import com.foodwastemanagement.dto.request.LoginUserRequestDto;
 import com.foodwastemanagement.dto.request.RegisterUserRequestDto;
+import com.foodwastemanagement.dto.response.GetLoggedInUserResponseDto;
 import com.foodwastemanagement.dto.response.LoginUserResponseDto;
 import com.foodwastemanagement.dto.response.LogoutUserResponseDto;
 import com.foodwastemanagement.dto.response.RegisterUserResponseDto;
@@ -13,10 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -74,5 +72,16 @@ public class UserController {
         logoutUserResponseDto.setMessage("You were successfully logged out!");
 
         return new ResponseEntity<>(logoutUserResponseDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<GetLoggedInUserResponseDto> getLoggedInUser(HttpSession httpSession) {
+
+        User loggedInUser = this.authService.getLoggedInUser(httpSession);
+
+        GetLoggedInUserResponseDto getLoggedInUserResponseDto = new GetLoggedInUserResponseDto();
+        getLoggedInUserResponseDto.setUsername(loggedInUser.getUsername());
+
+        return new ResponseEntity<>(getLoggedInUserResponseDto, HttpStatus.OK);
     }
 }

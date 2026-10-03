@@ -2,7 +2,6 @@ package com.foodwastemanagement.models.enums;
 
 public enum UserType {
     ADMIN,
-    FOOD_DONOR,
-    FOOD_RECIPIENT,
+    USER,
     DELIVERY_PARTNER
 }
