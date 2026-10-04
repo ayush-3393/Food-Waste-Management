@@ -1,10 +1,7 @@
 package com.foodwastemanagement.controller;
 
 import com.foodwastemanagement.dto.request.CreateFoodDonationRequestDto;
-import com.foodwastemanagement.dto.response.CreateFoodDonationResponseDto;
-import com.foodwastemanagement.dto.response.FoodCategoryResponseDto;
-import com.foodwastemanagement.dto.response.GetDetailToCreateFoodDonationsResponseDto;
-import com.foodwastemanagement.dto.response.QuantityUnitResponseDto;
+import com.foodwastemanagement.dto.response.*;
 import com.foodwastemanagement.models.FoodCategory;
 import com.foodwastemanagement.models.FoodDonation;
 import com.foodwastemanagement.models.QuantityUnit;
@@ -117,4 +114,31 @@ public class FoodDonationController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    @GetMapping("donation-list")
+    public ResponseEntity<List<GetFoodDonationsForUserResponseDto>> getFoodDonationsForUser(
+            HttpSession httpSession){
+        User loggedInUser = this.authService.getLoggedInUser(httpSession);
+        List<FoodDonation> allFoodDonationsForUser =
+                this.foodDonationService.getAllFoodDonationsForUser(loggedInUser);
+
+        List<GetFoodDonationsForUserResponseDto> responseDtoList = new ArrayList<>();
+
+        for(FoodDonation foodDonation : allFoodDonationsForUser){
+            GetFoodDonationsForUserResponseDto currentResponseDto = new GetFoodDonationsForUserResponseDto();
+            currentResponseDto.setDescription(foodDonation.getDescription());
+            currentResponseDto.setFoodType(foodDonation.getFoodType());
+            currentResponseDto.setFoodName(foodDonation.getFoodName());
+            currentResponseDto.setFoodCategoryName(foodDonation.getFoodCategory().getName());
+            currentResponseDto.setBestBeforeTime(foodDonation.getBestBeforeTime());
+            currentResponseDto.setPreparedTime(foodDonation.getPreparedTime());
+            currentResponseDto.setFoodListingStatus(foodDonation.getFoodListingStatus());
+            currentResponseDto.setQuantity(foodDonation.getQuantity());
+            currentResponseDto.setQuantityUnitSymbol(foodDonation.getUnit().getSymbol());
+            currentResponseDto.setImage(foodDonation.getImage());
+            responseDtoList.add(currentResponseDto);
+        }
+        return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
+    }
+
 }

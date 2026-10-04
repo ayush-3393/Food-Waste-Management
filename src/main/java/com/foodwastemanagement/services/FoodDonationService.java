@@ -5,6 +5,8 @@ import com.foodwastemanagement.models.FoodDonation;
 import com.foodwastemanagement.models.User;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface FoodDonationService {
     FoodDonation createAFoodDonation(
             CreateFoodDonationRequestDto createFoodDonationRequestDto,
@@ -13,4 +15,5 @@ public interface FoodDonationService {
     );
     FoodDonation updateAFoodDonation();
     FoodDonation deleteAFoodDonation();
+    List<FoodDonation> getAllFoodDonationsForUser(User user);
 }

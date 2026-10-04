@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -99,6 +100,12 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
     @Override
     public FoodDonation deleteAFoodDonation() {
         return null;
+    }
+
+    @Override
+    public List<FoodDonation> getAllFoodDonationsForUser(User user) {
+        Long donorId = user.getId();
+        return this.foodDonationRepository.findAllByDonorId(donorId);
     }
 
     private boolean isFoodListedForDonationExpired(LocalDateTime bestBeforeTime){
