@@ -13,7 +13,9 @@ import com.foodwastemanagement.repositories.FoodCategoryRepository;
 import com.foodwastemanagement.repositories.FoodDonationRepository;
 import com.foodwastemanagement.repositories.QuantityUnitRepository;
 import com.foodwastemanagement.services.FoodDonationService;
+import com.foodwastemanagement.services.ImageStorageService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,19 +27,23 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
     private final FoodDonationRepository foodDonationRepository;
     private final FoodCategoryRepository foodCategoryRepository;
     private final QuantityUnitRepository quantityUnitRepository;
+    private final ImageStorageService imageStorageService;
 
     public FoodDonationServiceImplementation(
             FoodDonationRepository foodDonationRepository,
             FoodCategoryRepository foodCategoryRepository,
-            QuantityUnitRepository quantityUnitRepository) {
+            QuantityUnitRepository quantityUnitRepository,
+            ImageStorageService imageStorageService) {
         this.foodDonationRepository = foodDonationRepository;
         this.foodCategoryRepository = foodCategoryRepository;
         this.quantityUnitRepository = quantityUnitRepository;
+        this.imageStorageService = imageStorageService;
     }
 
     @Override
     public FoodDonation createAFoodDonation(
             CreateFoodDonationRequestDto createFoodDonationRequestDto,
+            MultipartFile image,
             User user) {
 
         if(user.getUserType() == UserType.DELIVERY_PARTNER){
@@ -65,7 +71,9 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
 
         foodDonation.setBestBeforeTime(createFoodDonationRequestDto.getBestBeforeTime());
         foodDonation.setDonor(user);
-        foodDonation.setImage(createFoodDonationRequestDto.getImage());
+
+        String imagePath = this.imageStorageService.storeImage(image);
+        foodDonation.setImage(imagePath);
 
         Optional<QuantityUnit> quantityUnitOptional =
                 this.quantityUnitRepository

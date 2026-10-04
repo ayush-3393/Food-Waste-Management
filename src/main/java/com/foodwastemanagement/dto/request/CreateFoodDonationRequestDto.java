@@ -13,10 +13,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@Setter
 @Getter
+@Setter
+@NoArgsConstructor
 public class CreateFoodDonationRequestDto {
+
     @NotBlank(message = "food name is required")
     @Size(max = 100, message = "food name must not exceed 100 characters")
     private String foodName;
@@ -42,6 +43,4 @@ public class CreateFoodDonationRequestDto {
 
     @Size(max = 500, message = "description must not exceed 500 characters")
     private String description;
-
-    private String image;
 }

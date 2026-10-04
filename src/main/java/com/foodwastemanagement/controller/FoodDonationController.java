@@ -16,8 +16,12 @@ import com.foodwastemanagement.services.QuantityUnitService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,34 +46,41 @@ public class FoodDonationController {
         this.quantityUnitService = quantityUnitService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<CreateFoodDonationResponseDto> createFoodDonation (
-            @Valid @RequestBody CreateFoodDonationRequestDto createFoodDonationRequestDto,
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CreateFoodDonationResponseDto> createFoodDonation(
+            @Valid @ModelAttribute CreateFoodDonationRequestDto requestDto,
+            @RequestParam(value = "image", required = false)
+            MultipartFile image,
             HttpSession httpSession
-            ){
-        // throws exception if not logged in
-        User loggedInUser = this.authService.getLoggedInUser(httpSession);
+    ) {
+        User loggedInUser =
+                this.authService.getLoggedInUser(httpSession);
 
-        FoodDonation foodDonation = this.foodDonationService.createAFoodDonation(
-                createFoodDonationRequestDto,
-                loggedInUser
-        );
+        FoodDonation foodDonation =
+                this.foodDonationService.createAFoodDonation(requestDto, image, loggedInUser);
 
         CreateFoodDonationResponseDto responseDto = new CreateFoodDonationResponseDto();
+
         responseDto.setCreatedAt(foodDonation.getCreatedAt());
         responseDto.setFoodName(foodDonation.getFoodName());
         responseDto.setFoodCategoryName(foodDonation.getFoodCategory().getName());
         responseDto.setFoodListingStatus(foodDonation.getFoodListingStatus());
         responseDto.setFoodType(foodDonation.getFoodType());
-        responseDto.setImage(foodDonation.getImage());
+        String imagePath = foodDonation.getImage();
+        if (imagePath != null) {
+            String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/uploads/")
+                    .path(imagePath)
+                    .toUriString();
+            responseDto.setImage(imageUrl);
+        }
         responseDto.setQuantityUnitSymbol(foodDonation.getUnit().getSymbol());
         responseDto.setBestBeforeTime(foodDonation.getBestBeforeTime());
         responseDto.setPreparedTime(foodDonation.getPreparedTime());
         responseDto.setDescription(foodDonation.getDescription());
         responseDto.setQuantity(foodDonation.getQuantity());
 
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
-
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/details")
