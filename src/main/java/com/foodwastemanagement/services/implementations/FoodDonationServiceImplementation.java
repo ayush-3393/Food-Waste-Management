@@ -109,7 +109,7 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NearbyFoodDonationResponseDto> getNearbyFoodDonations(Coordinates coordinates) {
+    public List<FoodDonation> getNearbyFoodDonations(Coordinates coordinates) {
 
         if (
                 coordinates.getLatitude() < -90
@@ -130,7 +130,7 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
         double latDelta = radiusKm / 111.0;
         double lngDelta = radiusKm / (111.0 * Math.max(Math.cos(Math.toRadians(lat)), 0.0001));
 
-        List<FoodDonation> donations = foodDonationRepository.findNearby(
+        return foodDonationRepository.findNearby(
                 lat,
                 lng,
                 radiusKm,
@@ -141,35 +141,9 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
                 LocalDateTime.now(),
                 limit);
 
-
-        return donations.stream().map(d -> {
-            NearbyFoodDonationResponseDto dto = new NearbyFoodDonationResponseDto();
-            dto.setId(d.getId());
-            dto.setFoodName(d.getFoodName());
-            dto.setFoodCategoryName(d.getFoodCategory().getName());
-            dto.setQuantity(d.getQuantity());
-            dto.setQuantityUnitSymbol(d.getUnit().getSymbol());
-            dto.setFoodType(d.getFoodType());
-            dto.setBestBeforeTime(d.getBestBeforeTime());
-            dto.setImage(d.getImage());
-            dto.setLatitude(d.getCoordinates().getLatitude());
-            dto.setLongitude(d.getCoordinates().getLongitude());
-            dto.setDistanceKm(haversineKm(lat, lng,
-                    d.getCoordinates().getLatitude(), d.getCoordinates().getLongitude()));
-            return dto;
-        }).toList();
     }
 
     private boolean isFoodListedForDonationExpired(LocalDateTime bestBeforeTime) {
         return !bestBeforeTime.isAfter(LocalDateTime.now());
-    }
-
-    private static double haversineKm(double lat1, double lng1, double lat2, double lng2) {
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLng = Math.toRadians(lng2 - lng1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 }

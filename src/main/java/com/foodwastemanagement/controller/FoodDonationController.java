@@ -7,6 +7,7 @@ import com.foodwastemanagement.services.AuthService;
 import com.foodwastemanagement.services.FoodCategoryService;
 import com.foodwastemanagement.services.FoodDonationService;
 import com.foodwastemanagement.services.QuantityUnitService;
+import com.foodwastemanagement.utility.FoodDonationUtilities;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -143,13 +144,36 @@ public class FoodDonationController {
     @GetMapping("/nearby")
     public ResponseEntity<List<NearbyFoodDonationResponseDto>> getNearby(
             @RequestParam double latitude,
-            @RequestParam double longitude) {
+            @RequestParam double longitude,
+            HttpSession httpSession) {
+
+        User loggedInUser = this.authService.getLoggedInUser(httpSession);
+
         Coordinates coordinates = new Coordinates();
         coordinates.setLatitude(latitude);
         coordinates.setLongitude(longitude);
-        List<NearbyFoodDonationResponseDto> nearbyFoodDonations =
+        List<FoodDonation> nearbyFoodDonations =
                 this.foodDonationService.getNearbyFoodDonations(coordinates);
-        return new ResponseEntity<>(nearbyFoodDonations, HttpStatus.OK);
+
+        List<NearbyFoodDonationResponseDto> nearbyFoodDonationResponseDtos = nearbyFoodDonations.stream().map(d -> {
+            NearbyFoodDonationResponseDto dto = new NearbyFoodDonationResponseDto();
+
+            dto.setId(d.getId());
+            dto.setFoodName(d.getFoodName());
+            dto.setFoodCategoryName(d.getFoodCategory().getName());
+            dto.setQuantity(d.getQuantity());
+            dto.setQuantityUnitSymbol(d.getUnit().getSymbol());
+            dto.setFoodType(d.getFoodType());
+            dto.setBestBeforeTime(d.getBestBeforeTime());
+            dto.setImage(d.getImage());
+            dto.setLatitude(d.getCoordinates().getLatitude());
+            dto.setLongitude(d.getCoordinates().getLongitude());
+            dto.setDistanceKm(FoodDonationUtilities.haversineKm(latitude, longitude,
+                    d.getCoordinates().getLatitude(), d.getCoordinates().getLongitude()));
+            return dto;
+        }).toList();
+
+        return new ResponseEntity<>(nearbyFoodDonationResponseDtos, HttpStatus.OK);
     }
 
 }
