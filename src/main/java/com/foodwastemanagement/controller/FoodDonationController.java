@@ -2,10 +2,7 @@ package com.foodwastemanagement.controller;
 
 import com.foodwastemanagement.dto.request.CreateFoodDonationRequestDto;
 import com.foodwastemanagement.dto.response.*;
-import com.foodwastemanagement.models.FoodCategory;
-import com.foodwastemanagement.models.FoodDonation;
-import com.foodwastemanagement.models.QuantityUnit;
-import com.foodwastemanagement.models.User;
+import com.foodwastemanagement.models.*;
 import com.foodwastemanagement.services.AuthService;
 import com.foodwastemanagement.services.FoodCategoryService;
 import com.foodwastemanagement.services.FoodDonationService;
@@ -141,6 +138,18 @@ public class FoodDonationController {
             responseDtoList.add(currentResponseDto);
         }
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<List<NearbyFoodDonationResponseDto>> getNearby(
+            @RequestParam double latitude,
+            @RequestParam double longitude) {
+        Coordinates coordinates = new Coordinates();
+        coordinates.setLatitude(latitude);
+        coordinates.setLongitude(longitude);
+        List<NearbyFoodDonationResponseDto> nearbyFoodDonations =
+                this.foodDonationService.getNearbyFoodDonations(coordinates);
+        return new ResponseEntity<>(nearbyFoodDonations, HttpStatus.OK);
     }
 
 }

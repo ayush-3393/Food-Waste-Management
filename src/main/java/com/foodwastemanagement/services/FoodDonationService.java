@@ -1,6 +1,8 @@
 package com.foodwastemanagement.services;
 
 import com.foodwastemanagement.dto.request.CreateFoodDonationRequestDto;
+import com.foodwastemanagement.dto.response.NearbyFoodDonationResponseDto;
+import com.foodwastemanagement.models.Coordinates;
 import com.foodwastemanagement.models.FoodDonation;
 import com.foodwastemanagement.models.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,4 +18,5 @@ public interface FoodDonationService {
     FoodDonation updateAFoodDonation();
     FoodDonation deleteAFoodDonation();
     List<FoodDonation> getAllFoodDonationsForUser(User user);
+    List<NearbyFoodDonationResponseDto> getNearbyFoodDonations(Coordinates coordinates);
 }

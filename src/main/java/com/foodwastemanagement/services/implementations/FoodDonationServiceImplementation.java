@@ -1,6 +1,8 @@
 package com.foodwastemanagement.services.implementations;
 
+import com.foodwastemanagement.constants.FoodDonationsConstants;
 import com.foodwastemanagement.dto.request.CreateFoodDonationRequestDto;
+import com.foodwastemanagement.dto.response.NearbyFoodDonationResponseDto;
 import com.foodwastemanagement.exceptions.customExceptions.InvalidUserException;
 import com.foodwastemanagement.exceptions.customExceptions.ResourceNotFoundException;
 import com.foodwastemanagement.models.*;
@@ -12,9 +14,8 @@ import com.foodwastemanagement.repositories.QuantityUnitRepository;
 import com.foodwastemanagement.services.FoodDonationService;
 import com.foodwastemanagement.services.ImageStorageService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -106,9 +107,69 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
         return this.foodDonationRepository.findAllByDonorId(donorId);
     }
 
-    private boolean isFoodListedForDonationExpired(LocalDateTime bestBeforeTime){
-        LocalDate currentDate = LocalDate.now();
-        LocalDate bestBeforeDate = bestBeforeTime.toLocalDate();
-        return currentDate.isAfter(bestBeforeDate);
+    @Override
+    @Transactional(readOnly = true)
+    public List<NearbyFoodDonationResponseDto> getNearbyFoodDonations(Coordinates coordinates) {
+
+        if (
+                coordinates.getLatitude() < -90
+                        || coordinates.getLatitude() > 90
+                        || coordinates.getLongitude() < -180
+                        || coordinates.getLongitude() > 180
+        ) {
+            throw new IllegalArgumentException("Invalid coordinates");
+        }
+
+        double radiusKm = FoodDonationsConstants.RADIUS_IN_KM_FOR_NEARBY_DONATIONS_SEARCH;
+        Integer limit = FoodDonationsConstants.LIMIT_FOR_NEARBY_DONATIONS_NUMBER;
+
+        double lat = coordinates.getLatitude();
+        double lng = coordinates.getLongitude();
+
+        // Bounding box (1 degree of latitude ≈ 111 km)
+        double latDelta = radiusKm / 111.0;
+        double lngDelta = radiusKm / (111.0 * Math.max(Math.cos(Math.toRadians(lat)), 0.0001));
+
+        List<FoodDonation> donations = foodDonationRepository.findNearby(
+                lat,
+                lng,
+                radiusKm,
+                lat - latDelta,
+                lat + latDelta,
+                lng - lngDelta,
+                lng + lngDelta,
+                LocalDateTime.now(),
+                limit);
+
+
+        return donations.stream().map(d -> {
+            NearbyFoodDonationResponseDto dto = new NearbyFoodDonationResponseDto();
+            dto.setId(d.getId());
+            dto.setFoodName(d.getFoodName());
+            dto.setFoodCategoryName(d.getFoodCategory().getName());
+            dto.setQuantity(d.getQuantity());
+            dto.setQuantityUnitSymbol(d.getUnit().getSymbol());
+            dto.setFoodType(d.getFoodType());
+            dto.setBestBeforeTime(d.getBestBeforeTime());
+            dto.setImage(d.getImage());
+            dto.setLatitude(d.getCoordinates().getLatitude());
+            dto.setLongitude(d.getCoordinates().getLongitude());
+            dto.setDistanceKm(haversineKm(lat, lng,
+                    d.getCoordinates().getLatitude(), d.getCoordinates().getLongitude()));
+            return dto;
+        }).toList();
+    }
+
+    private boolean isFoodListedForDonationExpired(LocalDateTime bestBeforeTime) {
+        return !bestBeforeTime.isAfter(LocalDateTime.now());
+    }
+
+    private static double haversineKm(double lat1, double lng1, double lat2, double lng2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 }
