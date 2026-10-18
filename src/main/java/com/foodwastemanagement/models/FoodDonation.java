@@ -53,4 +53,17 @@ public class FoodDonation extends  BaseModel{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donor_id", nullable = false)
     private User donor;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(
+                    name = "latitude",
+                    column = @Column(name = "latitude")
+            ),
+            @AttributeOverride(
+                    name = "longitude",
+                    column = @Column(name = "longitude")
+            ),
+    })
+    private Coordinates coordinates;
 }

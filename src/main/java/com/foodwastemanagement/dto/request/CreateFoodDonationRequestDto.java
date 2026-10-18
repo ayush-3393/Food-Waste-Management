@@ -1,21 +1,22 @@
 package com.foodwastemanagement.dto.request;
 
+import com.foodwastemanagement.models.Coordinates;
 import com.foodwastemanagement.models.FoodCategory;
 import com.foodwastemanagement.models.QuantityUnit;
 import com.foodwastemanagement.models.enums.FoodType;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class CreateFoodDonationRequestDto {
 
     @NotBlank(message = "food name is required")
@@ -43,4 +44,7 @@ public class CreateFoodDonationRequestDto {
 
     @Size(max = 500, message = "description must not exceed 500 characters")
     private String description;
+
+    @Valid
+    private Coordinates coordinates;
 }

@@ -45,13 +45,14 @@ public class FoodDonationController {
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CreateFoodDonationResponseDto> createFoodDonation(
-            @Valid @ModelAttribute CreateFoodDonationRequestDto requestDto,
-            @RequestParam(value = "image", required = false)
-            MultipartFile image,
+            @RequestPart("data") @Valid CreateFoodDonationRequestDto requestDto,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             HttpSession httpSession
     ) {
         User loggedInUser =
                 this.authService.getLoggedInUser(httpSession);
+
+        System.out.println("REQUEST_DTO" + requestDto);
 
         FoodDonation foodDonation =
                 this.foodDonationService.createAFoodDonation(requestDto, image, loggedInUser);
@@ -136,6 +137,7 @@ public class FoodDonationController {
             currentResponseDto.setQuantity(foodDonation.getQuantity());
             currentResponseDto.setQuantityUnitSymbol(foodDonation.getUnit().getSymbol());
             currentResponseDto.setImage(foodDonation.getImage());
+            currentResponseDto.setCoordinates(foodDonation.getCoordinates());
             responseDtoList.add(currentResponseDto);
         }
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);

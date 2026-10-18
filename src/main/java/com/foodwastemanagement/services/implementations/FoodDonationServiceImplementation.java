@@ -3,10 +3,7 @@ package com.foodwastemanagement.services.implementations;
 import com.foodwastemanagement.dto.request.CreateFoodDonationRequestDto;
 import com.foodwastemanagement.exceptions.customExceptions.InvalidUserException;
 import com.foodwastemanagement.exceptions.customExceptions.ResourceNotFoundException;
-import com.foodwastemanagement.models.FoodCategory;
-import com.foodwastemanagement.models.FoodDonation;
-import com.foodwastemanagement.models.QuantityUnit;
-import com.foodwastemanagement.models.User;
+import com.foodwastemanagement.models.*;
 import com.foodwastemanagement.models.enums.FoodListingStatus;
 import com.foodwastemanagement.models.enums.UserType;
 import com.foodwastemanagement.repositories.FoodCategoryRepository;
@@ -88,6 +85,7 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
         foodDonation.setPreparedTime(createFoodDonationRequestDto.getPreparedTime());
         foodDonation.setQuantity(createFoodDonationRequestDto.getQuantity());
         foodDonation.setDescription(createFoodDonationRequestDto.getDescription());
+        foodDonation.setCoordinates(createFoodDonationRequestDto.getCoordinates());
 
         return this.foodDonationRepository.save(foodDonation);
     }

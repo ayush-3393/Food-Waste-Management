@@ -1,5 +1,6 @@
 package com.foodwastemanagement.dto.response;
 
+import com.foodwastemanagement.models.Coordinates;
 import com.foodwastemanagement.models.enums.FoodListingStatus;
 import com.foodwastemanagement.models.enums.FoodType;
 import lombok.Getter;
@@ -22,4 +23,5 @@ public class GetFoodDonationsForUserResponseDto {
     private String description;
     private String image;
     private FoodListingStatus foodListingStatus;
+    private Coordinates coordinates;
 }
