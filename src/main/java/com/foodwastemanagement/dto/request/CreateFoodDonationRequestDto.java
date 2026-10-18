@@ -47,4 +47,7 @@ public class CreateFoodDonationRequestDto {
 
     @Valid
     private Coordinates coordinates;
+
+    @NotNull(message = "please mention the price")
+    private Double price;
 }

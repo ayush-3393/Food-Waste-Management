@@ -87,6 +87,7 @@ public class FoodDonationServiceImplementation implements FoodDonationService {
         foodDonation.setQuantity(createFoodDonationRequestDto.getQuantity());
         foodDonation.setDescription(createFoodDonationRequestDto.getDescription());
         foodDonation.setCoordinates(createFoodDonationRequestDto.getCoordinates());
+        foodDonation.setPrice(createFoodDonationRequestDto.getPrice());
 
         return this.foodDonationRepository.save(foodDonation);
     }

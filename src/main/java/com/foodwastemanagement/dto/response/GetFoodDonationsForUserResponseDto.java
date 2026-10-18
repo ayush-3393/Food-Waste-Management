@@ -24,4 +24,5 @@ public class GetFoodDonationsForUserResponseDto {
     private String image;
     private FoodListingStatus foodListingStatus;
     private Coordinates coordinates;
+    private Double price;
 }

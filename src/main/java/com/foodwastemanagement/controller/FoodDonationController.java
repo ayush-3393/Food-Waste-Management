@@ -50,8 +50,6 @@ public class FoodDonationController {
         User loggedInUser =
                 this.authService.getLoggedInUser(httpSession);
 
-        System.out.println("REQUEST_DTO" + requestDto);
-
         FoodDonation foodDonation =
                 this.foodDonationService.createAFoodDonation(requestDto, image, loggedInUser);
 
@@ -75,6 +73,7 @@ public class FoodDonationController {
         responseDto.setPreparedTime(foodDonation.getPreparedTime());
         responseDto.setDescription(foodDonation.getDescription());
         responseDto.setQuantity(foodDonation.getQuantity());
+        responseDto.setPrice(foodDonation.getPrice());
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
@@ -136,13 +135,14 @@ public class FoodDonationController {
             currentResponseDto.setQuantityUnitSymbol(foodDonation.getUnit().getSymbol());
             currentResponseDto.setImage(foodDonation.getImage());
             currentResponseDto.setCoordinates(foodDonation.getCoordinates());
+            currentResponseDto.setPrice(foodDonation.getPrice());
             responseDtoList.add(currentResponseDto);
         }
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
     }
 
     @GetMapping("/nearby")
-    public ResponseEntity<List<NearbyFoodDonationResponseDto>> getNearby(
+    public ResponseEntity<List<NearbyFoodDonationResponseDto>> getNearbyFoodDonations(
             @RequestParam double latitude,
             @RequestParam double longitude,
             HttpSession httpSession) {
@@ -155,9 +155,9 @@ public class FoodDonationController {
         List<FoodDonation> nearbyFoodDonations =
                 this.foodDonationService.getNearbyFoodDonations(coordinates);
 
-        List<NearbyFoodDonationResponseDto> nearbyFoodDonationResponseDtos = nearbyFoodDonations.stream().map(d -> {
+        List<NearbyFoodDonationResponseDto> nearbyFoodDonationResponseDtos =
+                nearbyFoodDonations.stream().map(d -> {
             NearbyFoodDonationResponseDto dto = new NearbyFoodDonationResponseDto();
-
             dto.setId(d.getId());
             dto.setFoodName(d.getFoodName());
             dto.setFoodCategoryName(d.getFoodCategory().getName());
@@ -168,6 +168,7 @@ public class FoodDonationController {
             dto.setImage(d.getImage());
             dto.setLatitude(d.getCoordinates().getLatitude());
             dto.setLongitude(d.getCoordinates().getLongitude());
+            dto.setPrice(d.getPrice());
             dto.setDistanceKm(FoodDonationUtilities.haversineKm(latitude, longitude,
                     d.getCoordinates().getLatitude(), d.getCoordinates().getLongitude()));
             return dto;

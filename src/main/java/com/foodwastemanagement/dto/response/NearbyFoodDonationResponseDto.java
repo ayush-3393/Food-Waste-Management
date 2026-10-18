@@ -22,4 +22,5 @@ public class NearbyFoodDonationResponseDto {
     private Double latitude;
     private Double longitude;
     private Double distanceKm;
+    private Double price;
 }

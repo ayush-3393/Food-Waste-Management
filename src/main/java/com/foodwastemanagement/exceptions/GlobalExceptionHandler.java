@@ -113,4 +113,22 @@ public class GlobalExceptionHandler {
         errorResponse.setMessage(exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(InvalidFoodListingStatusException.class)
+    public ResponseEntity<BaseErrorResponse> handleInvalidFoodListingException(
+            InvalidFoodListingStatusException exception){
+        BaseErrorResponse errorResponse = new BaseErrorResponse();
+        errorResponse.setStatus(HttpStatus.UNPROCESSABLE_CONTENT.value());
+        errorResponse.setMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_CONTENT);
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<BaseErrorResponse> handleResourceAlreadyExistsException(
+            ResourceAlreadyExistsException exception){
+        BaseErrorResponse errorResponse = new BaseErrorResponse();
+        errorResponse.setStatus(HttpStatus.CONFLICT.value());
+        errorResponse.setMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
 }

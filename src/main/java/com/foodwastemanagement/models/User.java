@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -30,4 +32,7 @@ public class User extends BaseModel {
     @Column(name = "user_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserType userType;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Booking> listOfBookings;
 }

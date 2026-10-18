@@ -25,4 +25,5 @@ public class CreateFoodDonationResponseDto {
     private String image;
     private FoodListingStatus foodListingStatus;
     private LocalDateTime createdAt;
+    private Double price;
 }

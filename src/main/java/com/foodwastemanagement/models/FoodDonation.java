@@ -66,4 +66,10 @@ public class FoodDonation extends  BaseModel{
             ),
     })
     private Coordinates coordinates;
+
+    @Column(name = "price", nullable = false)
+    private Double price;
+
+    @OneToOne(mappedBy = "foodDonation", fetch = FetchType.LAZY)
+    private Booking booking;
 }
