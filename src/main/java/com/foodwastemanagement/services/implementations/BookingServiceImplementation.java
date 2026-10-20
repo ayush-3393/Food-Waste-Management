@@ -11,8 +11,11 @@ import com.foodwastemanagement.models.enums.FoodListingStatus;
 import com.foodwastemanagement.repositories.BookingRepository;
 import com.foodwastemanagement.repositories.FoodDonationRepository;
 import com.foodwastemanagement.services.BookingService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,8 +56,14 @@ public class BookingServiceImplementation implements BookingService {
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setFoodDonation(foodDonation);
-        booking.setBookingStatus(BookingStatus.PENDING);
+        booking.setBookingStatus(BookingStatus.ACCEPTED);
 
         return this.bookingRepository.save(booking);
+    }
+
+    @Override
+    public Page<Booking> findAllBookingsForUser(User user, Pageable pageable) {
+        return this.bookingRepository
+                .findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
     }
 }
